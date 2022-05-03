@@ -53,16 +53,36 @@
 
 ### [라우팅 테이블](https://youtu.be/CjnKNIyREHA?list=PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi)
 
-- 
+- 네트워크 상의 특정한 목적지까지 도달하는 방식에 대해 정의한 내용을 가지고 있는 테이블. 네트워크의 지도라고 할 수 있다.
+- 장치 A에서 다른 네트워크에 존재하는 장치 B와 ICMP 프로토콜 통신을 진행하는 과정
+  - 1.  라우팅 테이블을 참조하여 이더넷 + IP + ICMP 구조의 패킷을 목적지(장치 A의 게이트 웨이)에 전달.
+    2. 게이트웨이 라우터에서 이터넷 프로토콜>IP 프로토콜 확인 후 자신에게 온 것이 아님을 알고, 이더넷 프로토콜을 자신의 라우팅 테이블에 따라 다시 캡슐화
+    3. 위 과정을 장치 B에 도달할 때까지 반복
+  - 중간중간 라우팅 테이블에 MAC주소가 없을 경우 ARP 프로토콜 통신도 추가로 진행해야 하므로 훨씬 길어질 수 있다.
 
-### [라우팅 테이블 확인 실습](https://youtu.be/tVntagSJctc?list=PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi)
 
-- 
 
 ### [IPv4 조각화 이론](https://youtu.be/_AONcID7Sc8?list=PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi)
 
-- 
+- 조각화 : IP프로토콜에는 패킷당 데이터 전송량에 제한이 있으므로 큰 IP 패킷들이 MTU(Maximum Transmission Unit)를 갖는 링크를 통해 전송되려면 조각조각 나뉘어야 한다. 패킷을 전송에 적합한 프레임으로 변환하는 것이 조각화
+- IPv4에서는 발신지와 중간 라우터에서 IP조각화를 할 수 있고 IPv6에서는 발신지에서만 IP 조각화가 가능하다.
+- 패킷의 재조립은 최종 수신지에서만 가능하다.
 
 ### [IPv4 조각화 실습](https://youtu.be/QKEL9aBgHtg?list=PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi)
 
--
+조각화 예시 
+
+데이터 크기 - 2379바이트, MTU - 980바이트일 경우의 조각화
+
+IPv4만 캡슐화 할 경우 IPv4 프로토콜의 크기가 20바이트 이므로 IPv 420 + Data 960로 구성된 패킷으로 나뉜다.
+
+총 3개의 패킷으로 나뉘며, 마지막 패킷의 데이터 크기는 2379 - (960x2) = 459바이트
+
+각각의 패킷의 IPv4 Flag와 Fragment Offset은 다음과 같고 Identifier는 동일한 값이다.
+
+1 : mf 1, offset = 0
+
+2 : mf 1, offset = 960/8 = 120
+
+3 : mf 0, offset = 1920/8 = 120
+
