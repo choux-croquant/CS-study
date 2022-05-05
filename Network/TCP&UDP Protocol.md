@@ -40,7 +40,7 @@
 
   
 
-UDP(User Datagram Protocol)
+**UDP(User Datagram Protocol)**
 
 - Connectionless protocol
   - 발신자가 일방적으로 데이터를 송신하며 검증하지 않음.
