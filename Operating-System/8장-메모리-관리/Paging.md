@@ -58,7 +58,12 @@
 
 ### Multilevel Paging and Performance
 
-- 
+- 2중 이상의 **여러 레벨로 페이지 테이블을 구성**하는 방식
+- Address space가 더욱 커짐에 따라 다단계 페이지 테이블이 필요해질 수 있다.
+- 각 단계의 페이지 테이블이 메모리에 존재하므로, logical address의 physical address변환에 더 많은 메모리 접근이 필요하다.
+- 하지만 **TLB를 통해 접근 시간을 크게 줄일 수 있다.** 4단계 페이지 테이블을 사용하는 경우 다음과 같이 접근 시간이 산정될 수 있다.
+  - 메모리 접근 시간이 100ns, TLB접근 시간이 20ns이고, TLB hit ratio가 98%인 경우
+  - Effective Memory Access Time = 0.98 * 120 + 0.02 + 520 = 128ns
 
 ### Valid (v)/ Invalid (i) Bit in a Page Table
 
@@ -66,12 +71,41 @@
 
 ### Memory Protection
 
-- 
+- Page table의 각 엔트리마다 valid/invalid값을 표시하는 bit를 두어 Protection할 수 있다.
+- Protection bit - page에 대한 접근 권한을 제어하는 bit(read/write/read-only)
+- 각각의 프로세스 내에서 진행되는 과정이므로, 다른 프로세스 간 접근 제어가 아닌 프로세스 내의 code/date/stack영역에 대한 접근을 제한하는 의미를 가진다.
+- Valid/Invalid bit 
+  - Valid - 해당 주소의 frame에 그 프로세스를 구성하는 유효한 내용이 있음을 뜻한다. (접근 허용)
+  - Invalid - 해당 주소의 frame에 유효한 내용이 없음을 뜻한다. (접근 불허)
+    - 프로세스가 그 주소 부분을 사용하지 않는 케이스
+    - 해당 페이지가 메모리에 올라와 있지 않고 Swap area에 있는 케이스
 
 ### Inverted Page Table
 
+- 메모리 프레임마다 하나의 페이지 테이블 항목을 할당하여 프로세스 증가와 관계 없이 크기가 고정된 페이지 테이블에 프로세스를 매핑하는 방식
+- 시스템 전체에 하나의 페이지 테이블만 존재하며, 테이블 내 엔트리는 물리적 메모리의 한 프레임씩 매핑
+- Logical address가 Pid + Page number + offset으로 구성
+- Physical address는 Frame number + offset으로 구성
 - Inverted Page Table Architecture
+- ![img](http://blog.skby.net/blog/wp-content/uploads/2020/03/%EC%97%AD%ED%8E%98%EC%9D%B4%EC%A7%80%ED%85%8C%EC%9D%B4%EB%B8%94-%EA%B5%AC%EC%84%B1%EB%8F%84.png)
+- pid, pagenumber를 통해 테이블 조회 > 성공 시 엔트리의 인덱스로 frame조회
+- 다른 페이지 테이블 구성방식과 비교하여 **최소의 공간을 사용한다는 특징**을 가진다. 즉 공간 효율적
+- 페이지 테이블에 대한 **인덱스 탐색을 하지 못하므로** 경우에 따라 **탐색 성능이 매우 저하될 수 있다.**
 
 ### Shared Page
 
+- Shared code
+
+  - Re-entrant code(=Pure code) - 재진입 가능한 코드
+  - read-only로 하여 프로세스 간 하나의 code만 메모리에 올린다.
+  - Shared code는 모든 프로세스의 logical address space에서 동일한 위치에 있어야 한다.
+  - 중복되는 라이브러리 등을 하나의 physical memory에만 올리고 공유하는 것을 통해 메모리를 효과적으로 사용할 수 있다.
+
+- Private code and data
+
+  - 각 프로세스들은 독자적으로 메모리에 올린다.
+  - Private data는 logical address space의 아무 곳에나 와도 무방하다.
+
 - Shared Pages Example
+
+  ![img](https://velog.velcdn.com/images%2Flcy960729%2Fpost%2Fe71d46ec-83ef-4eb4-a6b8-cd16335e5876%2Fimage.png)
